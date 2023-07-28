@@ -1,0 +1,513 @@
+{
+	"info": {
+		"_postman_id": "98d2cf90-730a-4895-bc6b-e536e6b7516b",
+		"name": "BooksAPITesting",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26509882"
+	},
+	"item": [
+		{
+			"name": "API status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"console.log(response.status)\r",
+							"\r",
+							"pm.test(\"if Status 'OK'\", () => {\r",
+							"    pm.expect(response.status).to.equal(\"OK\")\r",
+							"})\r",
+							"\r",
+							"postman.setNextRequest(\"List of Books\")"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{basicURL}}/status",
+					"host": [
+						"{{basicURL}}"
+					],
+					"path": [
+						"status"
+					]
+				},
+				"description": "If status (200) will pass test"
+			},
+			"response": []
+		},
+		{
+			"name": "API Autentication",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"clientName\": \"Postman\",\r\n   \"clientEmail\": \"blablabla@gmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basicURL}}/api-clients",
+					"host": [
+						"{{basicURL}}"
+					],
+					"path": [
+						"api-clients"
+					]
+				},
+				"description": "If status (200) will pass test"
+			},
+			"response": []
+		},
+		{
+			"name": "List of Books",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const response = pm.response.json();\r",
+							"const nonFictionBooks = response.filter((book) => book.available === true );\r",
+							"const book = nonFictionBooks[0];\r",
+							"console.log(book.id)\r",
+							"\r",
+							"if (book){\r",
+							"    pm.globals.set('bookId', book.id)\r",
+							"}\r",
+							"\r",
+							"pm.test(\"book found\", ()=>{\r",
+							"    pm.expect(book).to.be.an('object')\r",
+							"    pm.expect(book.available).to.be.true\r",
+							"    pm.expect(book.type).to.eql(\"non-fiction\")});\r",
+							"    "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{basicURL}}/books?type=non-fiction",
+					"host": [
+						"{{basicURL}}"
+					],
+					"path": [
+						"books"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "non-fiction",
+							"description": "sort type fiction/ non-fiction"
+						},
+						{
+							"key": "limit",
+							"value": "5",
+							"description": "limit list elements",
+							"disabled": true
+						}
+					]
+				},
+				"description": "If status (200) will pass test"
+			},
+			"response": []
+		},
+		{
+			"name": "Book by Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const response = pm.response.json()\r",
+							"const stock = response['current-stock']\r",
+							"console.log(stock)\r",
+							"\r",
+							"pm.test('Is in stock', ()=>{\r",
+							"        pm.expect(stock).above(0)\r",
+							"})\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{basicURL}}/books/:bookId",
+					"host": [
+						"{{basicURL}}"
+					],
+					"path": [
+						"books",
+						":bookId"
+					],
+					"variable": [
+						{
+							"key": "bookId",
+							"value": "{{bookId}}"
+						}
+					]
+				},
+				"description": "If status (200) will pass test"
+			},
+			"response": []
+		},
+		{
+			"name": "Order Book",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"bookId\": {{bookId}},\r\n  \"customerName\": \"{{$randomFullName}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basicURL}}/orders",
+					"host": [
+						"{{basicURL}}"
+					],
+					"path": [
+						"orders"
+					]
+				},
+				"description": "If status (200) will pass test"
+			},
+			"response": []
+		},
+		{
+			"name": "Get all books orders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const response = pm.response.json()\r",
+							"const lastOrder = response.at(-1).id\r",
+							"\r",
+							"pm.globals.set('lastOrder', lastOrder)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basicURL}}/orders",
+					"host": [
+						"{{basicURL}}"
+					],
+					"path": [
+						"orders"
+					]
+				},
+				"description": "If status (200) will pass test"
+			},
+			"response": []
+		},
+		{
+			"name": "Get  order by Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basicURL}}/orders/:orderId",
+					"host": [
+						"{{basicURL}}"
+					],
+					"path": [
+						"orders",
+						":orderId"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{lastOrder}}"
+						}
+					]
+				},
+				"description": "If status (200) will pass test"
+			},
+			"response": []
+		},
+		{
+			"name": "Change client name in order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", ()=>{\r",
+							"    pm.response.to.have.status(204)\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"customerName\": \"JohnDoe\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basicURL}}/orders/:orderId",
+					"host": [
+						"{{basicURL}}"
+					],
+					"path": [
+						"orders",
+						":orderId"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{lastOrder}}"
+						}
+					]
+				},
+				"description": "If status (200) will pass test"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete an order by Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 204', ()=>{\r",
+							"    pm.response.to.have.status(204)});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basicURL}}/orders/:orderId",
+					"host": [
+						"{{basicURL}}"
+					],
+					"path": [
+						"orders",
+						":orderId"
+					],
+					"variable": [
+						{
+							"key": "orderId",
+							"value": "{{lastOrder}}"
+						}
+					]
+				},
+				"description": "If status (200) will pass test"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "basicURL",
+			"value": "https://simple-books-api.glitch.me",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "646bb3a252e9139c66941ad5fb7743fcb6400952eae219b94770876c4d85a9e0",
+			"type": "string"
+		}
+	]
+}
